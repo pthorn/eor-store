@@ -1,0 +1,14 @@
+/assets
+/build
+/dist
+/.idea
+/.coverage
+TODO.txt
+*.egg-info
+*.pyc
+*.orig
+*.swp
+*~
+.DS_Store
+._*
+

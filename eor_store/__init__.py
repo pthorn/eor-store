@@ -1,0 +1,20 @@
+# coding: utf-8
+
+from .config import config
+from .views import StoreViews
+from .delegate import StoreDelegate
+from .model import File
+
+from .handlers import (
+    SaveFile,
+    MakeThumbnail
+)
+
+
+def includeme(config):
+    settings = config.get_settings()
+
+    from eor.utils.settings import ParseSettings
+
+    (ParseSettings(settings, prefix='eor.')
+        .path('store-path', default='../store'))
