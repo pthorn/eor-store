@@ -15,11 +15,8 @@ from sqlalchemy.schema import Table, FetchedValue
 from sqlalchemy.types import Unicode, DateTime
 from sqlalchemy.ext.hybrid import hybrid_property
 
-# TODO!
 from . import config
-from eor.models import Session, Base
 from eor.utils import app_conf
-#from ..render.template_helpers import subdomain
 
 
 # TODO delete files
@@ -37,8 +34,8 @@ def _slugify(val, max_len=32):
     return val[:max_len].replace('/', '-')
 
 
-#class File(config.sqlalchemy_base):
-class File(Base):
+class File(config.sqlalchemy_base):
+#class File(Base):
     """
     """
 
@@ -58,13 +55,13 @@ class File(Base):
 
     @classmethod
     def get_by_id(cls, id):
-        return (Session()
+        return (config.sqlalchemy_session()
                 .query(cls)
                 .filter(cls.id == id)
                 .one())
 
     def add(self):
-        Session().add(self)
+        config.sqlalchemy_session().add(self)
 
     # @hybrid_property
     # def id(self):
