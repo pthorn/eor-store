@@ -117,4 +117,6 @@ class File(Base):
 
     @classmethod
     def _subdirs(cls, filename):
-        return os.path.join(filename[:3], filename[3:6], filename[6:9])
+        subdirs = [filename[n*config.subdir_chars:(n+1)*config.subdir_chars]
+                   for n in range(config.subdirs)]
+        return os.path.join(*subdirs)

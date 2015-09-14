@@ -10,5 +10,7 @@ class Config(object):
     def __init__(self):
         self.sqlalchemy_session = None
         self.sqlalchemy_base = None
+        self.subdirs = 3
+        self.subdir_chars = 3
 
 config = Config()
