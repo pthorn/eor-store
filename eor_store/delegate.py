@@ -19,10 +19,10 @@ class StoreDelegate(object):
         self.views = views
 
     def create_obj(self, filename):
-        _, ext = os.path.splitext(filename)
-        ext = ext.lstrip('.').lower() # TODO sanitize
+        filename_base, ext = os.path.splitext(filename)
+        ext = ext.lstrip('.').lower()  # TODO sanitize
         # TODO check extension!
-        return self.entity(type=self.name, orig_name=filename, ext=ext)
+        return self.entity(type=self.name, orig_name=filename_base, ext=ext)
 
     def get_obj_by_id(self, file_id):
         return self.entity.get_by_id(file_id)
