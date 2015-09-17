@@ -56,8 +56,8 @@ class SaveFile(object):
     def __init__(self):
         pass
 
-    def __call__(self, request, file_obj, webob_obj):
-        save_path = file_obj.get_path()
+    def __call__(self, views, delegate, model_obj, source_file, orig_name):
+        save_path = model_obj.fs_path(self.variant)
         save_dir = os.path.dirname(save_path)
 
         if os.path.exists(save_path):
@@ -79,7 +79,7 @@ class SaveFile(object):
         try:
             with open(save_path, 'wb') as f:
                 while True:
-                    data = webob_obj.read(8192)
+                    data = source_file.read(8192)
                     if not data:
                         break
                     f.write(data)
@@ -105,7 +105,7 @@ class MakeThumbnail(object):
         self.variant = variant
         self.quality = quality
 
-    def __call__(self, views, delegate, obj, webob_obj):
-        image = open_image(webob_obj)
+    def __call__(self, views, delegate, model_obj, source_file, orig_name):
+        image = open_image(source_file)
         image = self.algo(image, self.size)
-        save_image(image, obj, self.variant, self.quality)
+        save_image(image, model_obj, self.variant, self.quality)

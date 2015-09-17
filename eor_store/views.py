@@ -136,14 +136,17 @@ class StoreViews(object):
         # request parameterts
 
         try:
-            webob_obj = self.request.params[self.file_request_param]
+            fieldstorage = self.request.params[self.file_request_param]
         except (KeyError, ValueError) as e:
             log.warn('FileViews.upload_view(): request parameter not present: %s', e)
             raise HTTPBadRequest()
 
+        source_file = fieldstorage.file
+        orig_filename = fieldstorage.filename
+
         # create model object for the file
 
-        obj = self.delegate.create_obj(webob_obj.filename)
+        obj = self.delegate.create_obj(orig_filename)
 
         try:
             obj.add()
@@ -155,7 +158,7 @@ class StoreViews(object):
 
         for handler in self.delegate.get_save_handlers():
             try:
-                handler(self, self.delegate, obj, webob_obj)
+                handler(self, self.delegate, obj, source_file, orig_filename)
             except HandlerException as e:
                 transaction.doom()
                 log.exception(u'exception when saving file: %s', e)  # TODO
