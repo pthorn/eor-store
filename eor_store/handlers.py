@@ -53,8 +53,8 @@ class SetOwner(object):
 
 class SaveFile(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, variant=None):
+        self.variant = variant
 
     def __call__(self, views, delegate, model_obj, source_file, orig_name):
         save_path = model_obj.fs_path(self.variant)
@@ -64,7 +64,7 @@ class SaveFile(object):
             log.warn('overwriting existing file: %s', save_path)
 
         if not os.path.exists(save_dir):
-            log.warn('save_file(): creating directory %s', save_dir)
+            log.debug('save_file(): creating directory %s', save_dir)
 
             try:
                 os.makedirs(save_dir)
@@ -78,15 +78,12 @@ class SaveFile(object):
 
         try:
             with open(save_path, 'wb') as f:
+                source_file.seek(0)
                 while True:
                     data = source_file.read(8192)
                     if not data:
                         break
                     f.write(data)
-
-                f.close()
-
-            webob_obj.file.close()
         except Exception as e:
             log.error('SaveFile: error [%s] saving file: %s', e, save_path)
             raise # TODO
