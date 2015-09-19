@@ -120,8 +120,6 @@ class StoreViews(object):
         file_id = self.request.matchdict['id']
         variant = self.request.matchdict.get('variant', None)
 
-        print('****', file_id, variant)
-
         try:
             file_obj = self.delegate.get_obj_by_id(file_id)
         except NoResultFound:
@@ -131,7 +129,6 @@ class StoreViews(object):
         return HTTPFound(location=quote(file_obj.url(variant)))
 
     def upload_view(self):
-        file_type = self.delegate.name
 
         # request parameterts
 
@@ -139,6 +136,10 @@ class StoreViews(object):
             fieldstorage = self.request.params[self.file_request_param]
         except (KeyError, ValueError) as e:
             log.warn('FileViews.upload_view(): request parameter not present: %s', e)
+            raise HTTPBadRequest()
+
+        if fieldstorage.file is None:
+            log.warn('FileViews.upload_view(): bad file request parameter')
             raise HTTPBadRequest()
 
         source_file = fieldstorage.file
