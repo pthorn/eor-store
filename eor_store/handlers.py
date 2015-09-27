@@ -35,41 +35,54 @@ class HandlerException(Exception):
         return resp
 
 
-class SetOwner(object):
+class Handler(object):
 
-    def __init__(self, owner_entity, owner_id_req_param, file_field, file_id_field):
+    def register(self, views, delegate):
+        self.views = views
+        self.delegate = delegate
+
+
+class SetOwner(Handler):
+
+    def __init__(self, owner_entity, owner_field=None, file_field=None,
+                 owner_id_req_param='owner_id'):
         self.owner_entity = owner_entity
-        self.owner_id_req_param = owner_id_req_param
+        self.owner_field = owner_field
         self.file_field = file_field
-        self.file_id_field = file_id_field
+        self.owner_id_req_param = owner_id_req_param
 
-    def get_owner_entity(self, owner_id):
+    def get_owner_id(self):
+        return self.views.request.params.get(self.owner_id_req_param)
+
+    def get_owner_entity(self):
+        owner_id = self.get_owner_id()
+        if not owner_id:
+            return None
+
         try:
             return self.owner_entity.get_by_id(owner_id)
         except NoResultFound:
-            raise HandlerException('owner-not-found')
+            raise HandlerException(code='owner-not-found')
 
-    def handle(self, request, file_obj, webob_obj):
+    def __call__(self, model_obj, source_file, orig_name):
+        owner = self.get_owner_entity()
+        if not owner:
+            return
 
-        try:
-            owner_id = request.params[self.owner_id_req_param]  # TODO data type
-        except (KeyError, ValueError) as e:
-            log.warn('SetOwner: request parameter %s (owner entity id) not present', self.owner_id_req_param)
-            raise HTTPBadRequest()  # TODO raise HandlerException?
+        if self.owner_field:
+            setattr(model_obj, self.owner_field, owner)
 
-        owner = self.get_owner_entity(owner_id)
-
-        # TODO
-        getattr(owner, self.file_field).delete()
-        setattr(owner, self.file_field, file_obj)
+        if self.file_field:
+            getattr(owner, self.file_field).delete()
+            setattr(owner, self.file_field, model_obj)
 
 
-class SaveFile(object):
+class SaveFile(Handler):
 
     def __init__(self, variant=None):
         self.variant = variant
 
-    def __call__(self, views, delegate, model_obj, source_file, orig_name):
+    def __call__(self, model_obj, source_file, orig_name):
         save_path = model_obj.fs_path(self.variant)
         save_dir = os.path.dirname(save_path)
 
@@ -102,7 +115,7 @@ class SaveFile(object):
             raise # TODO
 
 
-class MakeThumbnail(object):
+class MakeThumbnail(Handler):
 
     algos = {
         'keep-proportions': make_thumbnail_keep_proportions,
@@ -115,7 +128,7 @@ class MakeThumbnail(object):
         self.variant = variant
         self.quality = quality
 
-    def __call__(self, views, delegate, model_obj, source_file, orig_name):
+    def __call__(self, model_obj, source_file, orig_name):
         image = open_image(source_file)
         image = self.algo(image, self.size)
         save_image(image, model_obj, self.variant, self.quality)

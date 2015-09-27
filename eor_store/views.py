@@ -116,6 +116,11 @@ class StoreViews(object):
             log.error('StoreViews: group %r / entity %r not registered', group, delegate_name)
             raise HTTPNotFound()
 
+        self.handlers = self.delegate.get_save_handlers()
+
+        for handler in self.handlers:
+            handler.register(self, self.delegate)
+
     def get_view(self):
         file_id = self.request.matchdict['id']
         variant = self.request.matchdict.get('variant', None)
@@ -157,9 +162,9 @@ class StoreViews(object):
 
         # run handlers
 
-        for handler in self.delegate.get_save_handlers():
+        for handler in self.handlers:
             try:
-                handler(self, self.delegate, obj, source_file, orig_filename)
+                handler(obj, source_file, orig_filename)
             except HandlerException as e:
                 transaction.doom()
                 log.exception(u'exception when saving file: %s', e)
