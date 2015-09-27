@@ -19,7 +19,20 @@ from .image_ops import (
 
 
 class HandlerException(Exception):
-    pass # TODO
+
+    def __init__(self, code=None, msg=None):
+        self.code = code
+        self.msg = msg
+
+    def response(self):
+        resp = {'status': 'error'}
+
+        if self.code:
+            resp['code'] = self.code
+        if self.msg:
+            resp['message'] = self.msg
+
+        return resp
 
 
 class SetOwner(object):

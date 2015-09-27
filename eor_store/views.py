@@ -162,8 +162,8 @@ class StoreViews(object):
                 handler(self, self.delegate, obj, source_file, orig_filename)
             except HandlerException as e:
                 transaction.doom()
-                log.exception(u'exception when saving file: %s', e)  # TODO
-                return {'status': 'error'}  # TODO report known error
+                log.exception(u'exception when saving file: %s', e)
+                return e.response()
             except Exception as e:
                 transaction.doom()
                 log.exception(u'exception when saving file: %s', e)
