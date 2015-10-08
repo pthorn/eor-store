@@ -11,9 +11,7 @@ import math
 
 from PIL import Image
 
-
-class NotAnImageException(Exception):
-    pass
+from .exceptions import NotAnImageException
 
 
 def get_image_format(file_obj):

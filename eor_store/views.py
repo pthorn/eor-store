@@ -16,7 +16,7 @@ import transaction
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 from pyramid.view import view_config
 
-from .handlers import HandlerException
+from .exceptions import HandlerException
 
 
 class StoreViews(object):

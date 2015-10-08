@@ -17,22 +17,7 @@ from .image_ops import (
     make_thumbnail_crop_to_size, make_thumbnail_keep_proportions
 )
 
-
-class HandlerException(Exception):
-
-    def __init__(self, code=None, msg=None):
-        self.code = code
-        self.msg = msg
-
-    def response(self):
-        resp = {'status': 'error'}
-
-        if self.code:
-            resp['code'] = self.code
-        if self.msg:
-            resp['message'] = self.msg
-
-        return resp
+from .exceptions import HandlerException
 
 
 class Handler(object):
