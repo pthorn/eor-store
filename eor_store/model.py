@@ -99,7 +99,7 @@ class File(config.sqlalchemy_base):
 
     @classmethod
     def _filesystem_path_prefix(cls):
-        return app_conf('eor.store-path')
+        return app_conf('eor-store.path')
 
     @classmethod
     def _url_prefix(cls):

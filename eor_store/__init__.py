@@ -17,5 +17,5 @@ def includeme(config):
 
     from eor.utils.settings import ParseSettings
 
-    (ParseSettings(settings, prefix='eor.')
-        .path('store-path', default='../store'))
+    (ParseSettings(settings, prefix='eor-store.')
+        .path('path', default='../store'))
