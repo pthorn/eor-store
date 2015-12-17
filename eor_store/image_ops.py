@@ -11,7 +11,7 @@ import math
 
 from PIL import Image
 
-from .exceptions import NotAnImageException
+from .exceptions import FileException, NotAnImageException
 
 
 def get_image_format(file_obj):
@@ -26,9 +26,10 @@ def open_image(source_file):
     try:
         image = Image.open(source_file)
     except IOError as e:
-        if str(e).find('annot identify image file'):
-            raise NotAnImageException
-        raise
+        if str(e).find('annot identify image file') != -1:
+            raise NotAnImageException(exc=e)
+        else:
+            raise FileException(exc=e)
 
     if image.mode != 'RGB':
         image.convert('RGB')
