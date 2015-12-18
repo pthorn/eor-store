@@ -29,6 +29,14 @@ class StoreViews(object):
     delegates = dict()
 
     @classmethod
+    def _get_delegate(cls, name, group='default'):
+        try:
+            return cls.delegates[group][name]
+        except KeyError:
+            log.error('StoreViews: group %r / entity %r not registered', group, delegate_name)
+            raise HTTPNotFound()  # TODO ???
+
+    @classmethod
     def register(cls, group='default'):
         """
         @StoreViews.register('site') class User(RestDelegate): pass
@@ -110,11 +118,9 @@ class StoreViews(object):
         group = route_name[2]
         delegate_name = route_name[3]
 
-        try:
-            self.delegate = self.delegates[group][delegate_name](self)
-        except KeyError:
-            log.error('StoreViews: group %r / entity %r not registered', group, delegate_name)
-            raise HTTPNotFound()
+        self.delegate = self._get_delegate(delegate_name, group)(self)
+
+        # handlers
 
         self.handlers = self.delegate.get_save_handlers()
 
