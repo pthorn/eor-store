@@ -26,7 +26,7 @@ class StoreViews(object):
     file_request_param = 'file'
     type_request_param = 'type'
 
-    delegates = dict()
+    delegates = dict()  # {'group_name': {'delegate_name': delegate}}
 
     @classmethod
     def _get_delegate(cls, name, group='default'):
@@ -127,17 +127,38 @@ class StoreViews(object):
         for handler in self.handlers:
             handler.register(self, self.delegate)
 
+        # variants
+
+        self.variants = self.delegate.get_variants()  # returns dict
+
+        for name, variant in self.variants.items():
+            variant.register(self, self.delegate, name)
+
     def get_view(self):
         file_id = self.request.matchdict['id']
-        variant = self.request.matchdict.get('variant', None)
+        variant_name = self.request.matchdict.get('variant', None)
 
         try:
-            file_obj = self.delegate.get_obj_by_id(file_id)
+            model_obj = self.delegate.get_obj_by_id(file_id)
         except NoResultFound:
-            return HTTPNotFound()
+            raise HTTPNotFound()
 
-        # TODO check for valid variant name?
-        return HTTPFound(location=quote(file_obj.url(variant)))
+        if variant_name is not None:
+
+            try:
+                variant = self.variants[variant_name]
+            except KeyError as e:
+                log.warn('StoreViews.get_view(): unknown variant: %s, name %s', variant_name, self.delegate.name)
+                raise HTTPBadRequest()
+
+            if not variant.file_exists(model_obj):
+                try:
+                    variant.create_from_file(model_obj)
+                except HandlerException as e:
+                    log.error(u'when generating variant: %s', e)
+                    raise HTTPBadRequest()  # TODO response?
+
+        return HTTPFound(location=quote(model_obj.url(variant_name)))
 
     def upload_view(self):
 

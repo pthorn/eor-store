@@ -29,3 +29,6 @@ class StoreDelegate(object):
 
     def get_save_handlers(self):
         return []
+
+    def get_variants(self):
+        return {}

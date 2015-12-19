@@ -70,11 +70,10 @@ def make_thumbnail_keep_proportions(image, size):
     return image
 
 
-def save_image(image, model_obj, variant, quality):
+def save_image(image, save_path, quality):
     """
     """
 
-    save_path = model_obj.fs_path(variant)
     if os.path.exists(save_path):
         log.warn('overwriting existing image: %s', save_path)
 

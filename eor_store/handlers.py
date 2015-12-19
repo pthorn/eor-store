@@ -11,7 +11,6 @@ import errno
 from sqlalchemy.orm.exc import NoResultFound
 from pyramid.httpexceptions import HTTPBadRequest
 
-#from .image import get_image_format, save_uploaded_image, NotAnImageException
 from .image_ops import (
     open_image, save_image,
     make_thumbnail_crop_to_size, make_thumbnail_keep_proportions
@@ -116,4 +115,6 @@ class MakeThumbnail(Handler):
     def __call__(self, model_obj, source_file, orig_name):
         image = open_image(source_file)
         image = self.algo(image, self.size)
-        save_image(image, model_obj, self.variant, self.quality)
+
+        save_path = model_obj.fs_path(self.variant)
+        save_image(image, save_path, self.quality)
