@@ -14,6 +14,7 @@ class StoreDelegate(object):
     name = None
     entity = File
     permission = None
+    generate_variants_on_upload = True
 
     def __init__(self, views):
         self.views = views

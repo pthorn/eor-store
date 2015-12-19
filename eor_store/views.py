@@ -201,6 +201,21 @@ class StoreViews(object):
                 log.exception(u'exception when saving file: %s', e)
                 return {'status': 'error'}  # unknown error
 
+        # run variants
+
+        if self.delegate.generate_variants_on_upload:
+            for variant in self.variants.values():
+                try:
+                    variant.create_from_request(obj, source_file)
+                except HandlerException as e:
+                    transaction.doom()
+                    log.error(u'exception when generating variants: %s', e)
+                    return e.response()
+                except Exception as e:
+                    transaction.doom()
+                    log.exception(u'exception when generating variants: %s', e)
+                    return {'status': 'error'}  # unknown error
+
         return {'status': 'ok', 'data': {'id': obj.id}}
 
     def delete_view(self):
