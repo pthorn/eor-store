@@ -167,11 +167,11 @@ class StoreViews(object):
         try:
             fieldstorage = self.request.params[self.file_request_param]
         except (KeyError, ValueError) as e:
-            log.warn('FileViews.upload_view(): request parameter not present: %s', e)
+            log.warn('StoreViews.upload_view(): request parameter not present: %s', e)
             raise HTTPBadRequest()
 
         if fieldstorage.file is None:
-            log.warn('FileViews.upload_view(): bad file request parameter')
+            log.warn('StoreViews.upload_view(): bad file request parameter')
             raise HTTPBadRequest()
 
         source_file = fieldstorage.file
@@ -184,7 +184,7 @@ class StoreViews(object):
         try:
             obj.add()
         except SQLAlchemyError as e:
-            log.error('FileViews.upload_view(): error persisting file object: %s', e)
+            log.error('StoreViews.upload_view(): error persisting file object: %s', e)
             return {'status': 'error', 'code': 'database-error'}
 
         # run handlers
