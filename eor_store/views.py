@@ -27,6 +27,7 @@ class StoreViews(object):
     type_request_param = 'type'
 
     delegates = dict()  # {'group_name': {'delegate_name': delegate}}
+    url_prefixes_by_group = dict()
 
     @classmethod
     def _get_delegate(cls, name, group='default'):
@@ -72,6 +73,8 @@ class StoreViews(object):
             else:
                 raise RuntimeError('group %r does not exist' % group)
 
+        cls.url_prefixes_by_group[group] = url_prefix
+
         for delegate_name, delegate in cls.delegates[group].items():
             # example: eor.store.default.user.get
             route_name = lambda suffix: 'eor.store.%s.%s.%s' % (group, delegate_name, suffix)
@@ -106,6 +109,16 @@ class StoreViews(object):
             config.add_view(cls, attr='delete_view',  route_name=route_name('delete'), renderer='json',
                             decorator=cls.handler_decorator, permission=permission('delete'))
             config.add_view(cls, attr='bad_method',  route_name=route_name('badmethod'), renderer='json')
+
+    @classmethod
+    def get_view_url(cls, delegate_name, id, group='default', variant=None):
+        # TODO check if group exists
+        url_prefix = cls.url_prefixes_by_group[group]
+
+        if variant:
+            return R'%s/%s/%s/%s' % (url_prefix, delegate_name, id, variant)
+        else:
+            return R'%s/%s/%s' % (url_prefix, delegate_name, id)
 
     def __init__(self, request):
         self.request = request

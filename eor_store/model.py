@@ -97,6 +97,10 @@ class File(config.sqlalchemy_base):
     def get_src(self, variant=None):
         return self.url(variant)
 
+    def get_view_url(self, variant=None, group='default'):
+        from .views import StoreViews
+        return StoreViews.get_view_url(self.type, self.id, group, variant)
+
     @classmethod
     def _filesystem_path_prefix(cls):
         return app_conf('eor-store.path')
