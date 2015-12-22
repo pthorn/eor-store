@@ -12,7 +12,7 @@ from .handlers import (
 
 from .variants import (
     Variant,
-    Thumbnail
+    Thumbnail, ThumbnailWithWatermark
 )
 
 

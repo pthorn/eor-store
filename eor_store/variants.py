@@ -66,3 +66,21 @@ class Thumbnail(Variant):
 
     def _process_image(self, image):
         return self.algo(image, self.size)
+
+
+class ThumbnailWithWatermark(Thumbnail):
+
+    def __init__(self, *args, watermark_path=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.watermark = open_image(watermark_path)
+
+    def _process_image(self, image):
+        image = super()._process_image(image)
+
+        box = (
+            image.size[0] - self.watermark.size[0] - 10,
+            image.size[1] - self.watermark.size[1] - 10
+        )
+        image.paste(self.watermark, box=box, mask=self.watermark)
+
+        return image
