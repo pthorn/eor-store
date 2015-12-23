@@ -232,8 +232,26 @@ class StoreViews(object):
         return {'status': 'ok', 'data': {'id': obj.id}}
 
     def delete_view(self):
-        pass  # TODO
+        image_id = self.request.matchdict['id']
+        try:
+            image = self.entity.get_by_id(image_id)
+        except NoResultFound:
+            return {'status': 'error', 'code': 'object-not-found'}
 
+        for key in self.entity.variants.keys():
+            try:
+                os.unlink(image.get_path(key))
+            except OSError as e:
+                if e.errno == errno.ENOENT:
+                    pass
+                else:
+                    raise
+
+        try:
+            image.delete()
+            return {'status': 'ok'}
+        except SQLAlchemyError as e:
+            return {'status': 'error', 'message': u'Error deleting object\n' + unicode(e).replace(u"' {'", u"'\n{'")}
 
     # TODO error view! this catches all exceptions
     @classmethod
