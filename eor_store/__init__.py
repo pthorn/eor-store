@@ -19,7 +19,7 @@ from .variants import (
 def includeme(config):
     settings = config.get_settings()
 
-    from eor.utils.settings import ParseSettings
+    from eor_settings import ParseSettings
 
-    (ParseSettings(settings, prefix='eor-store.')
+    (ParseSettings(settings, prefix='eor-store')
         .path('path', default='../store'))

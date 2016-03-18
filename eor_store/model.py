@@ -16,7 +16,7 @@ from sqlalchemy.types import Unicode, DateTime
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from . import config
-from eor.utils import app_conf
+from eor_settings import get_setting
 
 
 # TODO delete files
@@ -103,11 +103,11 @@ class File(config.sqlalchemy_base):
 
     @classmethod
     def _filesystem_path_prefix(cls):
-        return app_conf('eor-store.path')
+        return get_setting('eor-store.path')
 
     @classmethod
     def _url_prefix(cls):
-        return '//' + app_conf('eor.static-domain') + '/store/'
+        return '//' + get_setting('eor.static-domain') + '/store/'
 
     def _filename(self, variant=None):
         """

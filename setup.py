@@ -8,7 +8,8 @@ requires = [
     'pyramid >= 1.5.1',
     'SQLAlchemy >= 1.0.4',
     'pillow >= 2.6.1',
-    'eye-of-ra'
+    'eye-of-ra',
+    'eor-settings'
 ]
 
 setup(
