@@ -41,7 +41,7 @@ class File(config.sqlalchemy_base):
 
     __tablename__ = 'files'
 
-    id                  = Column('id', Unicode, primary_key=True)
+    id                  = Column(Unicode, primary_key=True)
     type                = Column(Unicode)
     _orig_name          = Column('orig_name', Unicode)
     orig_name_sanitized = Column(Unicode)
@@ -62,14 +62,6 @@ class File(config.sqlalchemy_base):
 
     def add(self):
         config.sqlalchemy_session().add(self)
-
-    # @hybrid_property
-    # def id(self):
-    #     return UUID(self._id)
-    #
-    # @id.setter
-    # def id(self, val):
-    #     self._id = val.hex
 
     @hybrid_property
     def orig_name(self):
