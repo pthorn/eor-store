@@ -7,7 +7,8 @@ from .model import File
 
 from .handlers import (
     SaveFile,
-    SetOwner
+    SetOwner,
+    MakeThumbnail
 )
 
 from .variants import (
